@@ -5,6 +5,7 @@ import "dotenv/config"
 import { connectDB } from "./lib/db.js";
 import cors from "cors"
 import { clerkMiddleware } from '@clerk/express'
+import job from "./lib/cron.js";
 
 const app = express()
 const PORT = process.env.PORT
@@ -34,6 +35,10 @@ if(fs.existsSync(publicDir)){
 app.listen(PORT,async () => {
     await connectDB()
     console.log("Server is up and running on port ",PORT);
+
+    if(process.env.NODE_ENV === "production"){
+        job.start()
+    }
 })
 
 
