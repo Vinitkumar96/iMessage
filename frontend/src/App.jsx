@@ -1,10 +1,11 @@
 import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/react";
+import { WallpaperProvider } from "./context/WallpaperContext";
 
 function App() {
 
   return (
-    <>
-      <h1>hi</h1>
+    <WallpaperProvider>
+    <div className="bg-neutral-400">
       <header>
         <Show when="signed-out">
           <SignInButton mode="modal" />
@@ -14,7 +15,8 @@ function App() {
           <UserButton />
         </Show>
       </header>
-    </>
+    </div>
+    </WallpaperProvider>
   );
 }
 
