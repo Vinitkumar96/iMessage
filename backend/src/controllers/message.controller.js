@@ -1,4 +1,5 @@
 import { hasImageKitConfig, uploadChatMethod } from "../lib/imagekit.js";
+import { getReceiverSocketId, io } from "../lib/socket.js";
 import { upload } from "../middleware/upload.middleware.js";
 import Message from "../models/message.model.js";
 import User from "../models/user.model.js";
@@ -87,49 +88,51 @@ export async function getConversationsForSidebar(req, res) {
 
     return res.status(200).json(conversations);
   } catch (error) {
-    console.error("Error in getConversationsForSidebar", error.message)
+    console.error("Error in getConversationsForSidebar", error.message);
     return res.status(500).json({
-        message:"Internal server error"
-    })
+      message: "Internal server error",
+    });
   }
 }
 
 export async function getMessages(req, res) {
-  try{
-    const {id : userToChatId}  = req.params
-    const myId = req.user._id
+  try {
+    const { id: userToChatId } = req.params;
+    const myId = req.user._id;
 
     const messages = await Message.find({
-      $or:[
-        {senderId: myId,receiverId:userToChatId},
-        {senderId:userToChatId, receiverId:myId}
-      ]
-    }).sort({createdAt: 1})
+      $or: [
+        { senderId: myId, receiverId: userToChatId },
+        { senderId: userToChatId, receiverId: myId },
+      ],
+    }).sort({ createdAt: 1 });
 
-    return res.status(200).json(messages)
-  }catch(error){
-    console.error("Error in getMessages:", error.message)
-    return res.status(500).json({message:"Internal server error"})
+    return res.status(200).json(messages);
+  } catch (error) {
+    console.error("Error in getMessages:", error.message);
+    return res.status(500).json({ message: "Internal server error" });
   }
 }
 
-export async function sendMessage(req,res){
-  try{
-    const {text} = req.body
-    const {id: receiverId} = req.params
-    const senderId = req.user._id
+export async function sendMessage(req, res) {
+  try {
+    const { text } = req.body;
+    const { id: receiverId } = req.params;
+    const senderId = req.user._id;
 
-    let imageUrl
-    let videoUrl
+    let imageUrl;
+    let videoUrl;
 
-    if(req.file){
-      if(!hasImageKitConfig()){
-        return res.status(500).json({message:"Media upload is not configured"})
+    if (req.file) {
+      if (!hasImageKitConfig()) {
+        return res
+          .status(500)
+          .json({ message: "Media upload is not configured" });
       }
 
-      const url = await uploadChatMethod(req.file)
-      if(req.file.mimetype.startsWith("video/")) videoUrl = url
-      else imageUrl = url
+      const url = await uploadChatMethod(req.file);
+      if (req.file.mimetype.startsWith("video/")) videoUrl = url;
+      else imageUrl = url;
     }
 
     const newMessage = new Message({
@@ -137,19 +140,24 @@ export async function sendMessage(req,res){
       receiverId,
       text,
       image: imageUrl,
-      video: videoUrl
-    })
+      video: videoUrl,
+    });
 
-    await newMessage.save()
+    await newMessage.save();
 
     //will use socket later so that user dont have to re-
     //refresh for seeing new messages every time
+    const receiverSocketId = getReceiverSocketId(receiverId); // now we have receiver socket id
+    //we will send if receiver is online
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage);
+    }
 
-
-  }catch(error){
-    console.error("Error in sendMessage:",error.message)
+    return res.status(200).json(newMessage);
+  } catch (error) {
+    console.error("Error in sendMessage:", error.message);
     return res.status(500).json({
-      message:"Internal Server Error"
-    })
+      message: "Internal Server Error",
+    });
   }
 }
