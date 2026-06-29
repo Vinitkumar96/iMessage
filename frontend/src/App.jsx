@@ -1,22 +1,27 @@
-import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/react";
+import { Show, SignInButton, SignUpButton, useAuth, UserButton } from "@clerk/react";
 import { WallpaperProvider } from "./context/WallpaperContext";
+import { ThemeProvider } from "./context/ThemeProvider";
+import ChatPage from "./pages/ChatPage";
+import AuthPage from "./pages/AuthPage";
+import { Navigate, replace, Route, Routes } from "react-router";
+
+
 
 function App() {
 
+  const { isSignedIn, isLoaded } = useAuth()
+
+  if(!isLoaded) return null
+
   return (
-    <WallpaperProvider>
-    <div className="bg-neutral-400">
-      <header>
-        <Show when="signed-out">
-          <SignInButton mode="modal" />
-          <SignUpButton mode="modal" />
-        </Show>
-        <Show when="signed-in">
-          <UserButton />
-        </Show>
-      </header>
-    </div>
-    </WallpaperProvider>
+    <ThemeProvider>
+      <WallpaperProvider>
+        <Routes>
+          <Route path="/" element={ isSignedIn ? <ChatPage /> : <Navigate to={"/auth"} replace />} />
+          <Route path="/auth" element={!isSignedIn  ? <AuthPage/> : <Navigate to={"/"} replace />} />
+        </Routes>
+      </WallpaperProvider>
+    </ThemeProvider>
   );
 }
 
