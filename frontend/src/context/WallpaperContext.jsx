@@ -29,7 +29,7 @@ export function WallpaperProvider({ children }) {
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, wallpaperId);
-  });
+  },[wallpaperId]);
 
   return (
     <WallpaperContext.Provider value={{frameStyle, setWallpaperId, wallpaper, wallpaperId}}>

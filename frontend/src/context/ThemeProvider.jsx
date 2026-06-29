@@ -41,9 +41,11 @@ function applyDomTheme(theme) {
 }
 
 export function ThemeProvider({ children }) {
+// for dark and light mode
   const [theme, setThemeState] = useState(
     () => readStoredTheme() ?? getSystemTheme(),
   );
+//   for preset
   const [themePreset, setThemePresetState] = useState(readStoredThemePreset);
 
   // this applies light/dark mode and dark/light preset
@@ -62,21 +64,21 @@ export function ThemeProvider({ children }) {
     localStorage.setItem("theme-preset", themePreset);
   }, [theme, themePreset]);
 
-  // ###########
+  // ############
   const setTheme = (next) => setThemeState(next); // for dark and light mode
 
   const toggleTheme = () => {
     setThemeState((t) => (t === "dark" ? "light" : "dark")); // for dark and light mode
   };
-  // ###########
+  // ############
 
- const setThemePreset = (presetId) => {
-  if (isValidThemePreset(presetId)) {
-    setThemePresetState(presetId)
-  } else {
-    setThemePresetState(DEFAULT_THEME_PRESET_ID)
-  }
-}
+  const setThemePreset = (presetId) => {
+    if (isValidThemePreset(presetId)) {
+      setThemePresetState(presetId);
+    } else {
+      setThemePresetState(DEFAULT_THEME_PRESET_ID);
+    }
+  };
 
   return (
     <ThemeContext.Provider

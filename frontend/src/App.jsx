@@ -4,6 +4,7 @@ import { ThemeProvider } from "./context/ThemeProvider";
 import ChatPage from "./pages/ChatPage";
 import AuthPage from "./pages/AuthPage";
 import { Navigate, replace, Route, Routes } from "react-router";
+import PageLoader from "./components/PageLoader";
 
 
 
@@ -11,7 +12,7 @@ function App() {
 
   const { isSignedIn, isLoaded } = useAuth()
 
-  if(!isLoaded) return null
+  if(!isLoaded) return <PageLoader/>
 
   return (
     <ThemeProvider>

@@ -12,7 +12,7 @@ export function frameStyleFromUrl(url) {
   };
 }
 
-//get the wallpaper by id from the list
+//get full wallpaper detail by ID
 export function getWallpaperById(id) {
   return WALLPAPERS.find((w) => w.id === id) ?? WALLPAPERS[0];
 }
