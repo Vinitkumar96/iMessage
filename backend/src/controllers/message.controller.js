@@ -148,7 +148,7 @@ export async function sendMessage(req, res) {
     //will use socket later so that user dont have to re-
     //refresh for seeing new messages every time
     const receiverSocketId = getReceiverSocketId(receiverId); // now we have receiver socket id
-    //we will send if receiver is online
+    //we will send if receiver is online 
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
     }
