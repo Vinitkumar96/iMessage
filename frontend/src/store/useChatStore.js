@@ -10,12 +10,17 @@ export const useChatStore = create(
     (set, get) => ({
       users: [],
       isUsersLoading: false,
+
       conversations: [],
       isConversationLoading: false,
+
       messages: [],
       isMessagesLoading: false,
+
       selectedUser: null,
+
       activeConversationId: null,
+
       searchQuery: "",
       sidebarTab: "chats",
       composerText: "",
@@ -135,13 +140,9 @@ export const useChatStore = create(
 
       setActiveConversationId: (activeConversationId) => {
         set((state) => ({
-          activeConversationId,
-          selectedUser:
-            state.users.find((user) => user._id === activeConversationId) ||
-            state.conversations.find(
-              (user) => user._id === activeConversationId,
-            ) ||
-            null,
+          activeConversationId:activeConversationId,
+          selectedUser: state.users.find((user) => user._id === activeConversationId) || state.conversations.find((user) => user._id === activeConversationId,) ||
+          null,
           messages: activeConversationId ? state.messages : [],
         }));
       },
@@ -150,6 +151,7 @@ export const useChatStore = create(
       setSidebarTab: (sidebarTab) => set({ sidebarTab }),
       setComposerText: (composerText) => set({ composerText }),
       setSoundEnabled: (isSoundEnabled) => set({ isSoundEnabled }),
+
     }),
     {
       name: "imessage-storage",

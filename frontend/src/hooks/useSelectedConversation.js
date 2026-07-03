@@ -11,8 +11,7 @@ export function getInitials(namePassed) {
     .join("");
 }
 
-// message in ui form
-
+// raw message to ui rendering based on sender and reciever!
 function mapMessage({ user, messages, authUser, onlineUsers }) {
   const mappedMessages = messages.map((message) => ({
     id: message._id,
@@ -20,45 +19,47 @@ function mapMessage({ user, messages, authUser, onlineUsers }) {
     text: message.text || "",
     imageUrl: message.image,
     videoUrl: message.video,
-    time: formatMessageTime(message.createdAt)
+    time: formatMessageTime(message.createdAt),
   }));
 
   return {
     id: user._id,
-    peer : {
-        name: user.fullName,
-        subtitle: user.email,
-        isOnline: onlineUsers.includes(user._id),
-        avatarUrl : user.profilePic,
-        initials : getInitials(user.fullName)
+    peer: {
+      name: user.fullName,
+      subtitle: user.email,
+      isOnline: onlineUsers.includes(user._id),
+      avatarUrl: user.profilePic,
+      initials: getInitials(user.fullName),
     },
-    messages: mappedMessages
-  }
+    messages: mappedMessages,
+  };
 }
 
+export function useSelectedConversation() {
+  const activeConversationId = useChatStore(
+    (state) => state.activeConverationId,
+  );
+  const conversations = useChatStore((state) => state.conversations);
+  const users = useChatStore((state) => state.users);
+  const messages = useChatStore((state) => state.messages);
 
-export function useSelectedConversation(){
-    const activeConversationId = useChatStore((state) => state.activeConverationId);
-    const conversations = useChatStore((state) => state.conversations);
-    const users = useChatStore((state) => state.users);
-    const messages = useChatStore((state) => state.messages);
+  const authUser = useAuthStore((state) => state.authUser);
+  const onlineUsers = useAuthStore((state) => state.onlineUsers);
 
-    const authUser = useAuthStore((state) => state.authUser);
-    const onlineUsers= useAuthStore((state) => state.onlineUsers);
+  const isLargeScreen = useMediaQuery("(min-width: 1024px)");
 
-    const isLargeScreen = useMediaQuery("(min-width: 1024px)");
+  const selectedUser = activeConversationId
+    ? users.find((user) => user._id === activeConversationId) ||
+      conversations.find((user) => user._id === activeConversationId)
+    : null;
 
-    const selectedUser = activeConverationId ? 
-    users.find((user) => user._id === activeConverationId) ||
-    conversations.find((user) => user._id === activeConverationId) : null;
+  const activeConversation = selectedUser
+    ? mapMessage({ user: selectedUser, messages, authUser, onlineUsers })
+    : null;
 
-    const activeConversation = selectedUser ? mapMessage({user : selectedUser, messages
-        ,authUser,onlineUsers
-    }) : null
-
-    return {
-        activeConversation,
-        activeConversationId,
-        isLargeScreen
-    }
+  return {
+    activeConversation,
+    activeConversationId,
+    isLargeScreen,
+  };
 }
