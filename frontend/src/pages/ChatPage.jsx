@@ -4,6 +4,7 @@ import { useChatStore } from "../store/useChatStore";
 import { useSelectedConversation } from "../hooks/useSelectedConversation";
 import { useEffect } from "react";
 import { ChatSidebar } from "../components/chat/ChatSidebar";
+import { ChatHeader } from "../components/chat/ChatHeader";
 
 const ChatPage = () => {
   const { frameStyle } = useWallpaper();
@@ -46,10 +47,8 @@ const ChatPage = () => {
             !isLargeScreen && !activeConversationId ? "hidden lg:flex" : "flex"
           }`}
         >
-          {/* <ChatHeader />
-          <MessageList /> */}
-          <p>message header</p>
-          <p>message list place</p>
+           <ChatHeader/>
+          {/*<MessageList /> */}
           {/* 
           {activeConversation ? <ChatComposer /> : null} */}
         </div>

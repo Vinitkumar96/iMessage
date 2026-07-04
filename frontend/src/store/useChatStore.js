@@ -139,6 +139,7 @@ export const useChatStore = create(
       setSelectedUser: (selectedUser) => set({ selectedUser }),
 
       setActiveConversationId: (activeConversationId) => {
+        console.log(`active conversation id set ${activeConversationId}`);
         set((state) => ({
           activeConversationId:activeConversationId,
           selectedUser: state.users.find((user) => user._id === activeConversationId) || state.conversations.find((user) => user._id === activeConversationId,) ||
