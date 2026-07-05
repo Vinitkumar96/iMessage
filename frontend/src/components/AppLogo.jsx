@@ -3,7 +3,7 @@ export const APP_NAME = "iMessage";
 export function AppLogo({ className = "", size = 32, alt = APP_NAME }) {
   return (
     <img
-      src="/logo.png"
+      src="/nLogo.png"
       alt={alt}
       width={size}
       height={size}

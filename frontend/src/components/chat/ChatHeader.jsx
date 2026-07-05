@@ -13,7 +13,7 @@ import { useSelectedConversation } from "../../hooks/useSelectedConversation";
 
 export function ChatHeader() {
   const isSoundEnabled = useChatStore((state) => state.isSoundEnabled);
-  const setActiveConversationId = useChatStore((state) => state.setActiveConversationId);
+  const setActiveConversationId = useChatStore((state) => state.setActiveConversationId); // x button removes active conversation
   const setSoundEnabled = useChatStore((state) => state.setSoundEnabled);
 
   const { activeConversation, isLargeScreen } = useSelectedConversation();

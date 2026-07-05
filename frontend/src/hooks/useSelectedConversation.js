@@ -36,6 +36,31 @@ function mapMessage({ user, messages, authUser, onlineUsers }) {
 }
 
 export function useSelectedConversation() {
+  const authUser = useAuthStore((state) => state.authUser);
+  const onlineUsers = useAuthStore((state) => state.onlineUsers);
+  const activeConversationId = useChatStore(
+    (state) => state.activeConversationId,
+  );
+  const selectedUser = useChatStore((state) => state.selectedUser); // ← use store directly
+  const messages = useChatStore((state) => state.messages);
+
+  const activeConversation = selectedUser
+    ? mapMessage({ user: selectedUser, messages, authUser, onlineUsers })
+    : null;
+
+  
+
+  const isLargeScreen = useMediaQuery("(min-width: 1024px)");
+
+  return {
+    activeConversation,
+    activeConversationId,
+    isLargeScreen,
+  };
+}
+
+/* 
+export function useSelectedConversation() {
 
   const activeConversationId = useChatStore(
     (state) => state.activeConversationId,
@@ -65,3 +90,5 @@ export function useSelectedConversation() {
     isLargeScreen,
   };
 }
+
+*/
