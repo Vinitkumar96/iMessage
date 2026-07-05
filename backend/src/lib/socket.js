@@ -9,25 +9,46 @@ const allowedOrigin = process.env.FRONTEND_URL || "http://localhost:5173";
 
 const io = new Server(server, { cors: { origin: [allowedOrigin] } });
 
-function getReceiverSocketId(userId) {
-  return userSocketMap[userId];
+const userSocketMap = new Map();
+
+function getReceiverSocketIds(userId) {
+  return Array.from(userSocketMap.get(String(userId)) ?? []);
 }
 
-const userSocketMap = {};
+function getOnlineUserIds() {
+  return Array.from(userSocketMap.keys());
+}
+
+function addUserSocket(userId, socketId) {
+  const normalizedUserId = String(userId);
+  const socketIds = userSocketMap.get(normalizedUserId) ?? new Set();
+  socketIds.add(socketId);
+  userSocketMap.set(normalizedUserId, socketIds);
+}
+
+function removeUserSocket(userId, socketId) {
+  const normalizedUserId = String(userId);
+  const socketIds = userSocketMap.get(normalizedUserId);
+  if (!socketIds) return;
+
+  socketIds.delete(socketId);
+
+  if (socketIds.size === 0) {
+    userSocketMap.delete(normalizedUserId);
+  }
+}
 
 io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;
 
-  if(userId) userSocketMap[userId] = socket.id;
+  if (userId) addUserSocket(userId, socket.id);
 
-  io.emit("getOnlineUsers", Object.keys(userSocketMap))
+  io.emit("getOnlineUsers", getOnlineUserIds());
 
   socket.on("disconnect", () => {
-    if(userId) delete userSocketMap[userId];
-    io.emit("getOnlineUsers", Object.keys(userSocketMap))
-  })
-  
+    if (userId) removeUserSocket(userId, socket.id);
+    io.emit("getOnlineUsers", getOnlineUserIds());
+  });
 });
 
-
-export {app, server, io, getReceiverSocketId}
+export { app, server, io, getReceiverSocketIds };

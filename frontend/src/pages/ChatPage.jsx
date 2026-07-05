@@ -1,6 +1,7 @@
 import toast from "react-hot-toast";
 import { useWallpaper } from "../context/wallpaper";
 import { useChatStore } from "../store/useChatStore";
+import { useAuthStore } from "../store/useAuthStore";
 import { useSelectedConversation } from "../hooks/useSelectedConversation";
 import { useEffect } from "react";
 import { ChatSidebar } from "../components/chat/ChatSidebar";
@@ -20,8 +21,10 @@ const ChatPage = () => {
   const unsubscribeFromMessages = useChatStore(
     (state) => state.unsubscribeFromMessages,
   );
+  const socket = useAuthStore((state) => state.socket);
 
-  const { activeConversation, activeConversationId, isLargeScreen } = useSelectedConversation();
+  const { activeConversation, activeConversationId, isLargeScreen } =
+    useSelectedConversation();
 
   useEffect(() => {
     getConversations();
@@ -29,13 +32,23 @@ const ChatPage = () => {
   }, [getConversations, getUsers]);
 
   useEffect(() => {
-    if(!activeConversationId) return;
+    if (!activeConversationId) return;
 
-    getMessages(activeConversationId) // getting the message for that conversation
+    getMessages(activeConversationId);
+  }, [activeConversationId, getMessages]);
+
+  useEffect(() => {
+    if (!activeConversationId || !socket) return;
+
     subscribeToMessages(activeConversationId);
 
     return () => unsubscribeFromMessages();
-  },[getMessages,activeConversationId,subscribeToMessages,unsubscribeFromMessages])
+  }, [
+    activeConversationId,
+    socket,
+    subscribeToMessages,
+    unsubscribeFromMessages,
+  ]);
 
   return (
     <div
@@ -49,9 +62,9 @@ const ChatPage = () => {
             !isLargeScreen && !activeConversationId ? "hidden lg:flex" : "flex"
           }`}
         >
-           <ChatHeader/>
+          <ChatHeader />
           <MessageList />
-          
+
           {activeConversation ? <ChatComposer /> : null}
         </div>
       </div>

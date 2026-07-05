@@ -1,5 +1,5 @@
 import { hasImageKitConfig, uploadChatMethod } from "../lib/imagekit.js";
-import { getReceiverSocketId, io } from "../lib/socket.js";
+import { getReceiverSocketIds, io } from "../lib/socket.js";
 import { upload } from "../middleware/upload.middleware.js";
 import Message from "../models/message.model.js";
 import User from "../models/user.model.js";
@@ -147,10 +147,12 @@ export async function sendMessage(req, res) {
 
     //will use socket later so that user dont have to re-
     //refresh for seeing new messages every time
-    const receiverSocketId = getReceiverSocketId(receiverId); // now we have receiver socket id
-    //we will send if receiver is online 
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("newMessage", newMessage);
+    const receiverSocketIds = getReceiverSocketIds(receiverId);
+    // we will send if receiver is online
+    if (receiverSocketIds.length > 0) {
+      receiverSocketIds.forEach((socketId) => {
+        io.to(socketId).emit("newMessage", newMessage);
+      });
     }
 
     return res.status(200).json(newMessage);
