@@ -8,7 +8,7 @@ const router = express.Router()
 router.use(protectRoute)
 
 router.get("/users",  getUsersForSidebar)
-router.get("/conversation", getConversationsForSidebar)
+router.get("/conversations", getConversationsForSidebar)
 router.get("/:id", getMessages)
 router.post("/send/:id", upload.single("media") ,sendMessage)
 
