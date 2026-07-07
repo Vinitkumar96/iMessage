@@ -13,11 +13,11 @@ export function ChatComposer() {
   const sendTextMessage = useChatStore((state) => state.sendTextMessage);
   const setComposerText = useChatStore((state) => state.setComposerText);
   const { activeConversationId } = useSelectedConversation();
-  const { playRandomKeyStrokeSound } = useKeyboardSound();
+  const { playRandomSounds } = useKeyboardSound();
   const mediaInputRef = useRef(null);
 
   const playSoundIfEnabled = () => {
-    if (isSoundEnabled) playRandomKeyStrokeSound();
+    if (isSoundEnabled) playRandomSounds();
   };
 
   const handleSend = async () => {
