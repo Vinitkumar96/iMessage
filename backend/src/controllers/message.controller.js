@@ -157,7 +157,7 @@ export async function sendMessage(req, res) {
 
     return res.status(200).json(newMessage);
   } catch (error) {
-    console.error("Error in sendMessage:", error.message);
+    console.error("Error in sendMessage:", error);
     return res.status(500).json({
       message: "Internal Server Error",
     });
